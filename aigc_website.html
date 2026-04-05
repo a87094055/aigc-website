@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>算法重构连接，进化定义未来 - 优选AIGC达人传媒</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bauhaus-red: #FF0000;
+            --bauhaus-yellow: #FFD700;
+            --bauhaus-blue: #0000FF;
+            --bauhaus-black: #000000;
+            --bauhaus-white: #FFFFFF;
+            --bauhaus-gray-light: #B0B0B0;
+            --bauhaus-gray: #808080;
+        }
+
+        body {
+            font-family: 'Inter', 'Futura', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bauhaus-white);
+            color: var(--bauhaus-black);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--bauhaus-black);
+            color: var(--bauhaus-white);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .navbar-logo img {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .navbar-logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 40px;
+        }
+
+        .navbar-links a {
+            color: var(--bauhaus-white);
+            text-decoration: none;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-links a:hover {
+            color: var(--bauhaus-yellow);
+        }
+
+        /* Hero Section Logo */
+        .hero-logo {
+            position: absolute;
+            top: 100px;
+            right: 80px;
+            width: 300px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.6s forwards;
+            z-index: 5;
+        }
+
+        .hero-logo img {
+            width: 100%;
+            height: auto;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 80px 80px;
+            position: relative;
+            background-color: var(--bauhaus-white);
+            overflow: hidden;
+        }
+
+        .hero-content {
+            flex: 0 0 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .hero-title {
+            font-size: 96px;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .hero-subtitle {
+            font-size: 24px;
+            font-weight: 400;
+            color: var(--bauhaus-gray);
+            margin-bottom: 60px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.3s forwards;
+        }
+
+        .hero-visual {
+            flex: 0 0 50%;
+            position: relative;
+            height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .geometric-circle {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background-color: var(--bauhaus-red);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: slowRotate 30s linear infinite;
+        }
+
+        .geometric-triangle {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 260px solid var(--bauhaus-yellow);
+            top: 30%;
+            right: 10%;
+            animation: slowRotate 25s linear infinite reverse;
+        }
+
+        .geometric-square {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background-color: var(--bauhaus-blue);
+            bottom: 20%;
+            left: 20%;
+            animation: slowRotate 35s linear infinite;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .scroll-triangle {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 20px solid var(--bauhaus-black);
+        }
+
+        /* 核心理念 Section */
+        .core-philosophy {
+            padding: 120px 80px;
+            background-color: var(--bauhaus-white);
+            position: relative;
+        }
+
+        .core-philosophy-decoration {
+            position: absolute;
+            top: 100px;
+            right: 10%;
+            width: 300px;
+            height: 300px;
+            background-color: rgba(176, 176, 176, 0.2);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .philosophy-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .philosophy-quote {
+            font-size: 28px;
+            font-weight: 300;
+            line-height: 2;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .philosophy-quote strong {
+            font-weight: 600;
+            color: var(--bauhaus-black);
+        }
+
+        .divider {
+            height: 2px;
+            background-color: var(--bauhaus-black);
+            margin: 60px 0;
+            opacity: 0.3;
+        }
+
+        /* 理念章节 Section */
+        .philosophy-section {
+            padding: 100px 80px;
+            border-top: 2px solid var(--bauhaus-black);
+        }
+
+        .philosophy-section:nth-child(even) {
+            background-color: #FAFAFA;
+        }
+
+        .philosophy-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 60px;
+        }
+
+        .philosophy-text {
+            flex: 0 0 80%;
+        }
+
+        .philosophy-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .philosophy-body {
+            font-size: 20px;
+            line-height: 1.8;
+            color: var(--bauhaus-gray);
+        }
+
+        .philosophy-body p {
+            margin-bottom: 24px;
+        }
+
+        .philosophy-body strong {
+            font-weight: 600;
+            color: var(--bauhaus-black);
+        }
+
+        .philosophy-visual {
+            flex: 0 0 20%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* 理念一的几何装饰 - 圆形 */
+        .philosophy-1-visual .visual-circle {
+            width: 200px;
+            height: 200px;
+            background-color: var(--bauhaus-red);
+            border-radius: 50%;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        /* 理念二的几何装饰 - 三角形 */
+        .philosophy-2-visual .visual-triangle {
+            width: 0;
+            height: 0;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-bottom: 173px solid var(--bauhaus-yellow);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* 理念三的几何装饰 - 方形 */
+        .philosophy-3-visual .visual-square {
+            width: 180px;
+            height: 180px;
+            background-color: var(--bauhaus-blue);
+            animation: rotate 20s linear infinite;
+        }
+
+        /* 理念四的几何装饰 - 圆形+三角形组合 */
+        .philosophy-4-visual .visual-combo {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .philosophy-4-visual .combo-circle {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background-color: var(--bauhaus-red);
+            border-radius: 50%;
+            top: 25px;
+            left: 25px;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .philosophy-4-visual .combo-triangle {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-bottom: 104px solid var(--bauhaus-yellow);
+            top: 50px;
+            left: 40px;
+            animation: float 2.5s ease-in-out infinite;
+        }
+
+        /* 理念五的几何装饰 - 多个几何图形重叠 */
+        .philosophy-5-visual .visual-overlap {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .philosophy-5-visual .overlap-circle {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background-color: var(--bauhaus-red);
+            border-radius: 50%;
+            top: 20px;
+            left: 40px;
+            opacity: 0.8;
+            animation: slowRotate 15s linear infinite;
+        }
+
+        .philosophy-5-visual .overlap-square {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background-color: var(--bauhaus-blue);
+            top: 60px;
+            left: 20px;
+            opacity: 0.8;
+            animation: slowRotate 20s linear infinite reverse;
+        }
+
+        .philosophy-5-visual .overlap-triangle {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-bottom: 104px solid var(--bauhaus-yellow);
+            top: 80px;
+            left: 70px;
+            opacity: 0.8;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* 理念六的几何装饰 - 大圆形+小三角形 */
+        .philosophy-6-visual .visual-liberation {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .philosophy-6-visual .liberation-circle {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border: 4px solid var(--bauhaus-blue);
+            border-radius: 50%;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        .philosophy-6-visual .liberation-triangle {
+            width: 0;
+            height: 0;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-bottom: 69px solid var(--bauhaus-red);
+            animation: rotate 10s linear infinite;
+        }
+
+        /* 使命宣言 Section */
+        .mission {
+            padding: 120px 80px;
+            background-color: var(--bauhaus-black);
+            color: var(--bauhaus-white);
+            text-align: center;
+            position: relative;
+        }
+
+        .mission-title {
+            font-size: 64px;
+            font-weight: 700;
+            margin-bottom: 60px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .mission-content {
+            max-width: 900px;
+            margin: 0 auto 80px;
+        }
+
+        .mission-paragraph {
+            font-size: 24px;
+            line-height: 2;
+            font-weight: 300;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .mission-geometric {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .mission-geo-red {
+            width: 60px;
+            height: 60px;
+            background-color: var(--bauhaus-red);
+            border-radius: 50%;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .mission-geo-yellow {
+            width: 60px;
+            height: 60px;
+            background-color: var(--bauhaus-yellow);
+            animation: rotate 20s linear infinite;
+        }
+
+        .mission-geo-blue {
+            width: 0;
+            height: 0;
+            border-left: 35px solid transparent;
+            border-right: 35px solid transparent;
+            border-bottom: 60px solid var(--bauhaus-blue);
+            animation: float 2s ease-in-out infinite;
+        }
+
+        /* 结语 Section */
+        .conclusion {
+            padding: 120px 80px;
+            background-color: var(--bauhaus-white);
+            text-align: left;
+        }
+
+        .conclusion-title {
+            font-size: 72px;
+            font-weight: 700;
+            margin-bottom: 60px;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+        }
+
+        .conclusion-text {
+            font-size: 24px;
+            line-height: 2;
+            font-weight: 300;
+            color: var(--bauhaus-gray);
+            max-width: 800px;
+            margin-bottom: 80px;
+        }
+
+        .cta-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .cta-button {
+            padding: 16px 48px;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .cta-button-red {
+            background-color: var(--bauhaus-red);
+            color: var(--bauhaus-white);
+            border: none;
+        }
+
+        .cta-button-yellow {
+            background-color: var(--bauhaus-yellow);
+            color: var(--bauhaus-black);
+            border: none;
+        }
+
+        .cta-button-blue {
+            background-color: var(--bauhaus-blue);
+            color: var(--bauhaus-white);
+            border: none;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 80px 80px 60px;
+            background-color: var(--bauhaus-black);
+            color: var(--bauhaus-white);
+            text-align: center;
+        }
+
+        .footer-logo {
+            margin-bottom: 40px;
+        }
+
+        .footer-logo img {
+            height: 60px;
+            width: auto;
+            opacity: 0.9;
+        }
+
+        /* 友情链接 Section */
+        .friendly-links {
+            padding: 60px 40px;
+            background-color: var(--bauhaus-white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .friendly-links-title {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 几何背景装饰 */
+        .geo-decoration {
+            position: absolute;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .geo-circle-1 {
+            width: 200px;
+            height: 200px;
+            border: 4px solid var(--bauhaus-red);
+            border-radius: 50%;
+            top: 10%;
+            left: 5%;
+        }
+
+        .geo-square-1 {
+            width: 100px;
+            height: 100px;
+            border: 4px solid var(--bauhaus-yellow);
+            top: 20%;
+            right: 10%;
+        }
+
+        .geo-triangle-1 {
+            width: 0;
+            height: 0;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-bottom: 104px solid var(--bauhaus-blue);
+            bottom: 15%;
+            left: 15%;
+        }
+
+        .links-container {
+            position: relative;
+            z-index: 10;
+        }
+
+        .links-scroll-container {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 5px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--bauhaus-black) var(--bauhaus-gray-light);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .links-scroll-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .links-scroll-container::-webkit-scrollbar-track {
+            background: var(--bauhaus-gray-light);
+            border-radius: 3px;
+        }
+
+        .links-scroll-container::-webkit-scrollbar-thumb {
+            background: var(--bauhaus-black);
+            border-radius: 3px;
+        }
+
+        .link-card {
+            background-color: var(--bauhaus-white);
+            border: 2px solid var(--bauhaus-black);
+            padding: 16px 20px;
+            text-decoration: none;
+            color: var(--bauhaus-black);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+            min-width: 200px;
+            max-width: 200px;
+        }
+
+        /* 卡片左上角几何装饰 */
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 30px;
+            height: 30px;
+            border-top: 2px solid var(--bauhaus-black);
+            border-left: 2px solid var(--bauhaus-black);
+            transition: all 0.3s ease;
+        }
+
+        /* 卡片右下角几何装饰 */
+        .link-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 25px;
+            height: 25px;
+            border-bottom: 2px solid var(--bauhaus-black);
+            border-right: 2px solid var(--bauhaus-black);
+            transition: all 0.3s ease;
+        }
+
+        .link-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 6px 6px 0 var(--bauhaus-black);
+        }
+
+        .link-card:hover::before {
+            border-top-color: var(--bauhaus-red);
+            border-left-color: var(--bauhaus-red);
+            width: 45px;
+            height: 45px;
+        }
+
+        .link-card:hover::after {
+            border-bottom-color: var(--bauhaus-yellow);
+            border-right-color: var(--bauhaus-yellow);
+            width: 40px;
+            height: 40px;
+        }
+
+        /* 不同卡片的颜色变体 */
+        .link-card:nth-child(2n):hover::before {
+            border-top-color: var(--bauhaus-yellow);
+            border-left-color: var(--bauhaus-yellow);
+        }
+
+        .link-card:nth-child(2n):hover::after {
+            border-bottom-color: var(--bauhaus-blue);
+            border-right-color: var(--bauhaus-blue);
+        }
+
+        .link-card:nth-child(3n):hover::before {
+            border-top-color: var(--bauhaus-blue);
+            border-left-color: var(--bauhaus-blue);
+        }
+
+        .link-card:nth-child(3n):hover::after {
+            border-bottom-color: var(--bauhaus-red);
+            border-right-color: var(--bauhaus-red);
+        }
+
+        /* LOGO容器 */
+        .link-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 8px;
+        }
+
+        .link-card-logo {
+            width: 40px;
+            height: 40px;
+            background-color: var(--bauhaus-white);
+            border: 2px solid var(--bauhaus-black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* LOGO几何装饰 */
+        .link-card-logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            background-color: var(--bauhaus-black);
+        }
+
+        .link-card-logo::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 7px;
+            height: 7px;
+            background-color: var(--bauhaus-black);
+        }
+
+        /* 不同LOGO的颜色变体 */
+        .link-card:nth-child(3n+1) .link-card-logo::before {
+            background-color: var(--bauhaus-red);
+        }
+
+        .link-card:nth-child(3n+2) .link-card-logo::before {
+            background-color: var(--bauhaus-yellow);
+        }
+
+        .link-card:nth-child(3n) .link-card-logo::before {
+            background-color: var(--bauhaus-blue);
+        }
+
+        .link-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-top: 6px;
+            line-height: 1.3;
+        }
+
+        .link-card-desc {
+            font-size: 11px;
+            color: var(--bauhaus-gray);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .link-card-tag {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 10px;
+            background-color: var(--bauhaus-black);
+            color: var(--bauhaus-white);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            align-self: flex-start;
+            position: relative;
+            margin-top: 6px;
+        }
+
+        /* 标签的几何装饰 */
+        .link-card-tag::before {
+            content: '';
+            position: absolute;
+            left: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            border-right: 4px solid var(--bauhaus-black);
+        }
+
+        /* 社媒链接特殊样式 */
+        .social-section .link-card:hover::before {
+            border-top-color: var(--bauhaus-red);
+            border-left-color: var(--bauhaus-red);
+        }
+
+        .social-section .link-card:nth-child(2):hover::before {
+            border-top-color: var(--bauhaus-yellow);
+            border-left-color: var(--bauhaus-yellow);
+        }
+
+        .social-section .link-card:nth-child(3):hover::before {
+            border-top-color: var(--bauhaus-blue);
+            border-left-color: var(--bauhaus-blue);
+        }
+
+        .social-section .link-card:nth-child(4):hover::before {
+            border-top-color: var(--bauhaus-red);
+            border-left-color: var(--bauhaus-red);
+        }
+
+        .social-section .link-card:nth-child(5):hover::before {
+            border-top-color: var(--bauhaus-yellow);
+            border-left-color: var(--bauhaus-yellow);
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: var(--bauhaus-gray-light);
+            letter-spacing: 1px;
+            margin-top: 40px;
+        }
+
+        /* 动画定义 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slowRotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                transform: translateX(-50%) translateY(10px);
+            }
+        }
+
+        /* 滚动触发动画 */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 联系弹窗 */
+        .contact-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .contact-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .contact-modal-content {
+            background-color: var(--bauhaus-white);
+            border: 4px solid var(--bauhaus-black);
+            padding: 60px 50px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            transform: translateY(40px) scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 12px 12px 0 rgba(255, 0, 0, 0.2);
+        }
+
+        .contact-modal.active .contact-modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+        .contact-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 45px;
+            height: 45px;
+            background-color: var(--bauhaus-red);
+            border: 3px solid var(--bauhaus-black);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .contact-modal-close::before,
+        .contact-modal-close::after {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 4px;
+            background-color: var(--bauhaus-white);
+        }
+
+        .contact-modal-close::before {
+            transform: rotate(45deg);
+        }
+
+        .contact-modal-close::after {
+            transform: rotate(-45deg);
+        }
+
+        .contact-modal-close:hover {
+            background-color: var(--bauhaus-yellow);
+            transform: rotate(180deg) scale(1.1);
+        }
+
+        .contact-modal-title {
+            font-size: 26px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 35px;
+            text-align: center;
+            position: relative;
+            color: var(--bauhaus-black);
+        }
+
+        .contact-modal-title::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -12px;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 5px;
+            background: linear-gradient(90deg, var(--bauhaus-red), var(--bauhaus-yellow), var(--bauhaus-blue));
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 20px 22px;
+            border: 3px solid var(--bauhaus-black);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+        }
+
+        .contact-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--bauhaus-red), var(--bauhaus-yellow));
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:nth-child(2)::before {
+            background: linear-gradient(180deg, var(--bauhaus-yellow), var(--bauhaus-blue));
+        }
+
+        .contact-item:nth-child(3)::before {
+            background: linear-gradient(180deg, var(--bauhaus-blue), var(--bauhaus-red));
+        }
+
+        .contact-item:hover {
+            transform: translateX(8px) scale(1.02);
+            box-shadow: 8px 8px 0 var(--bauhaus-black);
+        }
+
+        .contact-item:hover::before {
+            width: 12px;
+        }
+
+        .contact-icon {
+            width: 55px;
+            height: 55px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid var(--bauhaus-black);
+            font-size: 26px;
+            font-weight: 700;
+            position: relative;
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+            transition: all 0.3s ease;
+        }
+
+        .contact-icon::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--bauhaus-red);
+            border: 2px solid var(--bauhaus-black);
+            z-index: 1;
+        }
+
+        .contact-icon::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            right: -3px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--bauhaus-blue);
+            border: 2px solid var(--bauhaus-black);
+            z-index: 1;
+        }
+
+        .contact-item:nth-child(2) .contact-icon::before {
+            background-color: var(--bauhaus-yellow);
+        }
+
+        .contact-item:nth-child(3) .contact-icon::before {
+            background-color: var(--bauhaus-blue);
+        }
+
+        .contact-item:nth-child(3) .contact-icon::after {
+            background-color: var(--bauhaus-red);
+        }
+
+        .contact-item:hover .contact-icon {
+            transform: rotate(5deg) scale(1.1);
+        }
+
+        .contact-details {
+            flex: 1;
+        }
+
+        .contact-label {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--bauhaus-gray);
+            margin-bottom: 6px;
+        }
+
+        .contact-value {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--bauhaus-black);
+            letter-spacing: 0.5px;
+        }
+
+        .contact-value.email {
+            font-size: 15px;
+        }
+
+        .contact-modal-geo {
+            position: absolute;
+            opacity: 0.08;
+            pointer-events: none;
+        }
+
+        .modal-geo-circle {
+            width: 180px;
+            height: 180px;
+            border: 6px solid var(--bauhaus-red);
+            border-radius: 50%;
+            top: -60px;
+            right: -60px;
+        }
+
+        .modal-geo-square {
+            width: 100px;
+            height: 100px;
+            border: 6px solid var(--bauhaus-yellow);
+            bottom: -40px;
+            left: -40px;
+            transform: rotate(15deg);
+        }
+
+        .modal-geo-triangle {
+            width: 0;
+            height: 0;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-bottom: 104px solid var(--bauhaus-blue);
+            bottom: -30px;
+            right: 50px;
+        }
+
+        /* 装饰性色块 */
+        .contact-modal-content::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 30px;
+            height: 30px;
+            background-color: var(--bauhaus-red);
+            border: 3px solid var(--bauhaus-black);
+            z-index: 5;
+        }
+
+        .contact-modal-content::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: -3px;
+            width: 25px;
+            height: 25px;
+            background-color: var(--bauhaus-yellow);
+            border: 3px solid var(--bauhaus-black);
+            z-index: 5;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .hero-title {
+                font-size: 72px;
+            }
+
+            .hero-logo {
+                width: 250px;
+            }
+
+            .hero-visual {
+                height: 400px;
+            }
+
+            .geometric-circle {
+                width: 300px;
+                height: 300px;
+            }
+
+            .geometric-triangle {
+                border-left-width: 120px;
+                border-right-width: 120px;
+                border-bottom-width: 208px;
+            }
+
+            .geometric-square {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        @media (max-width: 968px) {
+            .hero {
+                flex-direction: column;
+                padding: 100px 40px 60px;
+            }
+
+            .hero-content {
+                flex: 1;
+                margin-bottom: 60px;
+            }
+
+            .hero-logo {
+                position: relative;
+                top: 0;
+                right: 0;
+                width: 100%;
+                max-width: 280px;
+                margin: 0 auto 40px;
+                animation: fadeInUp 1s ease 0.3s forwards;
+            }
+
+            .hero-title {
+                font-size: 56px;
+            }
+
+            .hero-subtitle {
+                font-size: 18px;
+            }
+
+            .hero-visual {
+                flex: 1;
+                width: 100%;
+                height: 350px;
+            }
+
+            .core-philosophy,
+            .philosophy-section {
+                padding: 80px 40px;
+            }
+
+            .philosophy-container {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .philosophy-text {
+                flex: 1;
+            }
+
+            .philosophy-visual {
+                flex: 0 0 150px;
+            }
+
+            .philosophy-title {
+                font-size: 36px;
+            }
+
+            .philosophy-body {
+                font-size: 18px;
+            }
+
+            .mission {
+                padding: 80px 40px;
+            }
+
+            .mission-title {
+                font-size: 48px;
+            }
+
+            .mission-paragraph {
+                font-size: 20px;
+            }
+
+            .conclusion {
+                padding: 80px 40px;
+            }
+
+            .conclusion-title {
+                font-size: 48px;
+            }
+
+            .conclusion-text {
+                font-size: 20px;
+            }
+
+            .cta-container {
+                flex-direction: column;
+            }
+
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .navbar-links {
+                gap: 20px;
+            }
+
+            .navbar-links a {
+                font-size: 12px;
+            }
+
+            .friendly-links,
+            .links-section {
+                padding: 60px 40px;
+            }
+
+            .friendly-links-title {
+                font-size: 36px;
+                margin-bottom: 60px;
+            }
+
+            .links-section-title {
+                font-size: 20px;
+                margin-bottom: 30px;
+            }
+
+            .links-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 16px;
+            }
+
+            .link-card {
+                padding: 20px;
+            }
+
+            .link-card-title {
+                font-size: 16px;
+            }
+
+            .link-card-desc {
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 80px 20px 40px;
+            }
+
+            .hero-logo {
+                width: 100%;
+                max-width: 220px;
+                margin-bottom: 30px;
+            }
+
+            .hero-title {
+                font-size: 40px;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .hero-visual {
+                height: 250px;
+            }
+
+            .geometric-circle {
+                width: 200px;
+                height: 200px;
+            }
+
+            .geometric-triangle {
+                border-left-width: 80px;
+                border-right-width: 80px;
+                border-bottom-width: 138px;
+            }
+
+            .geometric-square {
+                width: 100px;
+                height: 100px;
+            }
+
+            .core-philosophy,
+            .philosophy-section {
+                padding: 60px 20px;
+            }
+
+            .philosophy-quote {
+                font-size: 20px;
+                line-height: 1.8;
+            }
+
+            .philosophy-title {
+                font-size: 28px;
+            }
+
+            .philosophy-body {
+                font-size: 16px;
+            }
+
+            .mission-title {
+                font-size: 36px;
+            }
+
+            .mission-paragraph {
+                font-size: 18px;
+            }
+
+            .conclusion-title {
+                font-size: 36px;
+            }
+
+            .conclusion-text {
+                font-size: 18px;
+            }
+
+            .cta-button {
+                padding: 14px 32px;
+                font-size: 14px;
+            }
+
+            .navbar-logo {
+                font-size: 18px;
+            }
+
+            .navbar-links {
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <img src="https://s.coze.cn/image/SSpotMGsPyM/" alt="优选AIGC达人传媒">
+        </div>
+        <div class="navbar-links">
+            <a href="#philosophy">理念</a>
+            <a href="#mission">使命</a>
+            <a href="#contact">联系</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-logo">
+            <img src="https://s.coze.cn/image/SSpotMGsPyM/" alt="优选AIGC达人传媒">
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title">AI重构连接<br>进化定义未来</h1>
+            <p class="hero-subtitle">专注小红书、视频号、公众号、B站、抖音，用持续进化的AI预测系统定义AIGC达人传播</p>
+        </div>
+        <div class="hero-visual">
+            <div class="geometric-circle"></div>
+            <div class="geometric-triangle"></div>
+            <div class="geometric-square"></div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-triangle"></div>
+        </div>
+    </section>
+
+    <!-- 核心理念 Section -->
+    <section class="core-philosophy fade-in-section">
+        <div class="core-philosophy-decoration"></div>
+        <div class="philosophy-content">
+            <div class="philosophy-quote">
+                <strong>真正的传播不发生在过去，而发生在算法预测的未来。</strong>
+            </div>
+            <div class="philosophy-quote">
+                AI时代以周为单位迭代。昨天的算法今天失效，今天的达人明天过时。
+            </div>
+            <div class="philosophy-quote">
+                我们构建的是<strong>持续进化的智能体</strong>——实时感知，动态调整，持续发现。
+            </div>
+            <div class="philosophy-quote">
+                唯一不变的就是变化。我们的使命是同步进化。
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 理念一：重新定义影响力 -->
+    <section class="philosophy-section fade-in-section" id="philosophy">
+        <div class="philosophy-container">
+            <div class="philosophy-text">
+                <h2 class="philosophy-title">重新定义影响力</h2>
+                <div class="philosophy-body">
+                    <p><strong>影响力的维度在重构。</strong></p>
+                    <p>传统指标——粉丝数、播放量、转化率——不仅失去预测价值，甚至可能误导。</p>
+                    <p><strong>实时内容密度</strong><br>不是数量，而是单位信息量的价值密度。AI实时识别当下价值，预测衰减周期。</p>
+                    <p><strong>动态认知共鸣</strong><br>不是粉丝多少，而是内容与受众认知的实时匹配度。受众在变，算法在调，周期在缩。</p>
+                    <p><strong>传播势能预测</strong><br>不是当前曝光，而是未来时间轴上的传播潜力。潜力随平台、用户、竞品实时波动。</p>
+                    <p>我们看实时的内容密度。<br>我们预测动态的认知共鸣。<br>我们计算波动的传播势能。</p>
+                    <p><strong>影响力是动态状态，我们是实时感知者。</strong></p>
+                </div>
+            </div>
+            <div class="philosophy-visual philosophy-1-visual">
+                <div class="visual-circle"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 理念二：AI即进化 -->
+    <section class="philosophy-section fade-in-section">
+        <div class="philosophy-container">
+            <div class="philosophy-text">
+                <h2 class="philosophy-title">AI即进化</h2>
+                <div class="philosophy-body">
+                    <p><strong>不依赖固定算法，只相信持续进化的智能。</strong></p>
+                    <p>传统算法是静态的——训练完成后使用，定期更新。在AI时代，这种节奏太慢。</p>
+                    <p>我们构建的智能体是持续进化的。</p>
+                    <p><strong>实时学习机制</strong><br>每一次分析都在喂养算法，每一次预测都在校准模型，每一次变化都在触发适应。系统按小时、按分钟持续进化。</p>
+                    <p><strong>动态模型调优</strong><br>小红书调整推荐，抖音改变规则，B站用户迁移，系统实时感知，动态调整，无需人工介入。</p>
+                    <p><strong>新兴趋势捕捉</strong><br>新的表达方式、内容形态、达人崛起，系统能在趋势成为主流前识别信号，提前调整策略。</p>
+                    <p>算法不是工具，而是进化的生命体。<br>经验滞后，学习实时。<br>模型固定，智能演进。</p>
+                    <p><strong>我们的系统，与AI时代的变化同频共振。</strong></p>
+                </div>
+            </div>
+            <div class="philosophy-visual philosophy-2-visual">
+                <div class="visual-triangle"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 理念三：平台即活体语言 -->
+    <section class="philosophy-section fade-in-section">
+        <div class="philosophy-container">
+            <div class="philosophy-text">
+                <h2 class="philosophy-title">平台即活体语言</h2>
+                <div class="philosophy-body">
+                    <p><strong>每个平台都是一种活着的语言。</strong></p>
+                    <p>小红书是生活化叙事语言，而且语法在演变。<br>视频号是信任构建语言，逻辑在调整。<br>公众号是深度思考语言，标准在更新。<br>B站是知识探索语言，形式在创新。<br>抖音是情绪共振语言，触发点在迁移。</p>
+                    <p>同一个产品，需要不同语言表达。更重要的是，语言本身在变化。</p>
+                    <p>AI能够实时理解这些活体语言的语法演变——不是表面的形式变化，而是深层的传播逻辑重构。</p>
+                    <p><strong>跨平台传播是智能的实时语言转译。</strong></p>
+                    <p>我们匹配实时变化的语言与实时变化的受众。</p>
+                </div>
+            </div>
+            <div class="philosophy-visual philosophy-3-visual">
+                <div class="visual-square"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 理念四：发现优于寻找 -->
+    <section class="philosophy-section fade-in-section">
+        <div class="philosophy-container">
+            <div class="philosophy-text">
+                <h2 class="philosophy-title">发现优于寻找</h2>
+                <div class="philosophy-body">
+                    <p><strong>不寻找已知热点，只发现未知潜力。</strong></p>
+                    <p>传统传播基于"寻找"——在已知达人池中筛选。这是在已知范围内做选择。</p>
+                    <p>我们相信，真正的价值在于"发现"。</p>
+                    <p><strong>新兴达人实时识别</strong><br>AI时代达人崛起速度前所未有。几千粉丝的创作者，明天可能爆发。系统实时扫描全平台，提前识别潜力达人。</p>
+                    <p><strong>传播机会实时捕捉</strong><br>新形式、新角度、新场景，每天涌现。系统实时监测，捕捉未广泛认知的机会。</p>
+                    <p><strong>价值洼地实时挖掘</strong><br>达人价值被低估，平台红利未充分利用，内容形式潜力未认知，系统实时识别，创造超额回报。</p>
+                    <p>寻找在红海竞争，发现开拓蓝海。<br>已知价值有限，未知价值无限。<br>热点竞争激烈，潜力机会无限。</p>
+                    <p><strong>我们在实时发现下一个可能。</strong></p>
+                </div>
+            </div>
+            <div class="philosophy-visual philosophy-4-visual">
+                <div class="visual-combo">
+                    <div class="combo-circle"></div>
+                    <div class="combo-triangle"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 理念五：预测系统持续进化 -->
+    <section class="philosophy-section fade-in-section">
+        <div class="philosophy-container">
+            <div class="philosophy-text">
+                <h2 class="philosophy-title">预测系统持续进化</h2>
+                <div class="philosophy-body">
+                    <p><strong>我们的预测能力，与AI时代同步进化。</strong></p>
+                    <p>统计学说过去，无法说未来。AI时代预测模型的半衰期在缩短，今天准确的模型明天可能失效。</p>
+                    <p>我们构建的是持续进化的预测生态。</p>
+                    <p><strong>数据监测实时进化</strong><br>系统是动态扩展的。新维度重要，新指标有价值，新工具有效，系统实时整合，持续提升监测深度和广度。</p>
+                    <p><strong>预测模型持续优化</strong><br>每一次预测产生反馈，每一次反馈优化模型，每一次优化提升精度。系统在每一分每一秒持续学习和进化。</p>
+                    <p><strong>适应能力不断提升</strong><br>技术迭代、平台调整、用户迁移、竞品动态。系统实时感知，动态调整，持续提升预测稳定性。</p>
+                    <p>不依赖历史能力，相信进化潜力。<br>不承诺固定准确率，追求持续提升速度。<br>不为过去成就自豪，为进化速度骄傲。</p>
+                    <p><strong>在快速变化时代，进化速度就是竞争力。</strong></p>
+                </div>
+            </div>
+            <div class="philosophy-visual philosophy-5-visual">
+                <div class="visual-overlap">
+                    <div class="overlap-circle"></div>
+                    <div class="overlap-square"></div>
+                    <div class="overlap-triangle"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 理念六：智能即解放 -->
+    <section class="philosophy-section fade-in-section">
+        <div class="philosophy-container">
+            <div class="philosophy-text">
+                <h2 class="philosophy-title">智能即解放</h2>
+                <div class="philosophy-body">
+                    <p><strong>让人类回归创造，让进化交给AI。</strong></p>
+                    <p>传统传播充满重复劳动——筛选达人、沟通需求、把控内容、监测效果。这些占据大部分时间，却不是价值创造核心。</p>
+                    <p>AI的使命不是替代，而是解放。让人类专注高价值创造，让算法负责持续进化的执行。</p>
+                    <p>当AI承担实时监测、动态预测、持续优化，人类可以专注真正创造价值的部分：理解品牌核心价值、洞察用户真实需求、创造有温度的内容、建立有深度的关系。</p>
+                    <p>更重要的是，人类可以专注战略思考——如何在快速变化中保持品牌定位清晰，如何在技术迭代中保持传播策略前瞻，如何在竞争中保持差异化优势。</p>
+                    <p><strong>算法处理可计算、可进化、可优化的部分。<br>人类处理不可计算、需要创造、需要战略的部分。</strong></p>
+                    <p>我们相信，最好的传播是持续进化的智能算法与人类创造力的完美融合。</p>
+                    <p><strong>算法负责进化的速度，人类负责进化的方向。</strong></p>
+                </div>
+            </div>
+            <div class="philosophy-visual philosophy-6-visual">
+                <div class="visual-liberation">
+                    <div class="liberation-circle"></div>
+                    <div class="liberation-triangle"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 使命宣言 Section -->
+    <section class="mission fade-in-section" id="mission">
+        <h2 class="mission-title">我们的使命</h2>
+        <div class="mission-content">
+            <p class="mission-paragraph">构建AIGC达人传播的未来基础设施——持续进化的AI预测系统。</p>
+            <p class="mission-paragraph">不依赖历史积累，不依赖经验传承，不依赖人力规模。建立在AI算法的实时进化、多模态理解的动态扩展、跨平台语言的智能适配、新兴达人发现的持续探索之上。</p>
+            <p class="mission-paragraph">目标不是最大的代理公司，而是进化速度最快的传播预测引擎。</p>
+            <p class="mission-paragraph">让每一项AI技术找到最懂它的实时表达者。<br>让每一个用户遇到最适合自己的当下AI工具。<br>让每一次传播在持续进化的算法预测下实现最优效果。</p>
+            <p class="mission-paragraph">这是我们的使命，也是我们相信的未来。</p>
+        </div>
+        <div class="mission-geometric">
+            <div class="mission-geo-red"></div>
+            <div class="mission-geo-yellow"></div>
+            <div class="mission-geo-blue"></div>
+        </div>
+    </section>
+
+    <!-- 结语 Section -->
+    <section class="conclusion fade-in-section" id="contact">
+        <h2 class="conclusion-title">与变化共进化</h2>
+        <div class="conclusion-text">
+            <p>AIGC正在重塑世界，传播方式正在被重新定义，而且速度在加快。</p>
+            <p>传统逻辑失效，新范式崛起。选择相信静态经验还是拥抱进化智能，选择依赖历史数据还是预测动态未来，决定谁能站在未来一边。</p>
+            <p>我们选择拥抱进化。</p>
+            <p>我们选择实时感知，不是静态记录。<br>我们选择动态预测，不是固定模型。<br>我们选择持续发现，不是重复已知。<br>我们选择与变化同步进化。</p>
+            <p>AI时代变化很快，我们的进化速度更快。</p>
+            <p><strong>欢迎来到与变化共进化的未来。</strong></p>
+        </div>
+        <div class="cta-container">
+            <a href="#" class="cta-button cta-button-red" onclick="openContactModal(event, '合作')">开始合作</a>
+            <a href="#" class="cta-button cta-button-yellow" onclick="openContactModal(event, '资源库')">了解AIGC达人资源库</a>
+        </div>
+    </section>
+
+    <!-- 友情链接 Section -->
+    <section class="friendly-links fade-in-section">
+        <!-- 几何背景装饰 -->
+        <div class="geo-decoration geo-circle-1"></div>
+        <div class="geo-decoration geo-square-1"></div>
+        <div class="geo-decoration geo-triangle-1"></div>
+
+        <h2 class="friendly-links-title">友情导航</h2>
+        <div class="links-container">
+            <div class="links-scroll-container">
+                <!-- 国内头部视频模型 -->
+                <a href="https://www.doubao.com/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">豆包</div>
+                    </div>
+                    <span class="link-card-title">豆包视频</span>
+                    <span class="link-card-desc">字节跳动 - AI视频生成</span>
+                    <span class="link-card-tag">视频生成</span>
+                </a>
+                <a href="https://tongyi.aliyun.com/wanxiang/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">万象</div>
+                    </div>
+                    <span class="link-card-title">通用万象</span>
+                    <span class="link-card-desc">阿里巴巴 - 视频生成</span>
+                    <span class="link-card-tag">视频生成</span>
+                </a>
+                <a href="https://kimi.moonshot.cn/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">Kimi</div>
+                    </div>
+                    <span class="link-card-title">Kimi视频</span>
+                    <span class="link-card-desc">月之暗面 - 智能创作</span>
+                    <span class="link-card-tag">视频生成</span>
+                </a>
+                <a href="https://chatglm.cn/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">智谱</div>
+                    </div>
+                    <span class="link-card-title">智谱视频</span>
+                    <span class="link-card-desc">智谱AI - 多模态生成</span>
+                    <span class="link-card-tag">视频生成</span>
+                </a>
+                <a href="https://yiyan.baidu.com/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">文心</div>
+                    </div>
+                    <span class="link-card-title">文心视频</span>
+                    <span class="link-card-desc">百度 - AI视频平台</span>
+                    <span class="link-card-tag">视频生成</span>
+                </a>
+                <a href="https://www.sensetime.com/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">SEKO</div>
+                    </div>
+                    <span class="link-card-title">商汤SEKO</span>
+                    <span class="link-card-desc">商汤 - 视频生成模型</span>
+                    <span class="link-card-tag">视频生成</span>
+                </a>
+                <a href="https://www.jimeng.ai/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">即梦</div>
+                    </div>
+                    <span class="link-card-title">即梦视频</span>
+                    <span class="link-card-desc">即梦科技 - 创作平台</span>
+                    <span class="link-card-tag">视频生成</span>
+                </a>
+                <a href="https://www.hailuoai.com/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">海螺</div>
+                    </div>
+                    <span class="link-card-title">海螺视频</span>
+                    <span class="link-card-desc">海螺AI - 智能生成</span>
+                    <span class="link-card-tag">视频生成</span>
+                </a>
+                <a href="https://klingai.com/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">可灵</div>
+                    </div>
+                    <span class="link-card-title">可灵视频</span>
+                    <span class="link-card-desc">快手 - 视频大模型</span>
+                    <span class="link-card-tag">视频生成</span>
+                </a>
+                <a href="https://www.minimax.chat/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">Mini</div>
+                    </div>
+                    <span class="link-card-title">MiniMax</span>
+                    <span class="link-card-desc">MiniMax - 视频模型</span>
+                    <span class="link-card-tag">视频生成</span>
+                </a>
+
+                <!-- 国际AIGC创作比赛 -->
+                <a href="https://www.aifilmfestival.cz/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">CZAI</div>
+                    </div>
+                    <span class="link-card-title">捷克AI电影节</span>
+                    <span class="link-card-desc">国际AI电影创作赛事</span>
+                    <span class="link-card-tag">电影节</span>
+                </a>
+                <a href="https://ai.baidu.com/aigc/competition" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">百度</div>
+                    </div>
+                    <span class="link-card-title">百度AIGC联赛</span>
+                    <span class="link-card-desc">国内顶级创作赛事</span>
+                    <span class="link-card-tag">创作联赛</span>
+                </a>
+                <a href="https://www.midjourney.com/showcase/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">MJ</div>
+                    </div>
+                    <span class="link-card-title">Midjourney</span>
+                    <span class="link-card-desc">周度优秀作品展示</span>
+                    <span class="link-card-tag">作品展示</span>
+                </a>
+                <a href="https://stability.ai/competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">SD</div>
+                    </div>
+                    <span class="link-card-title">Stability AI</span>
+                    <span class="link-card-desc">官方创作比赛</span>
+                    <span class="link-card-tag">官方竞赛</span>
+                </a>
+                <a href="https://runwayml.com/competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">Runway</div>
+                    </div>
+                    <span class="link-card-title">Runway影展</span>
+                    <span class="link-card-desc">AI电影创作赛事</span>
+                    <span class="link-card-tag">电影节</span>
+                </a>
+                <a href="https://pika.art/competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">Pika</div>
+                    </div>
+                    <span class="link-card-title">Pika挑战赛</span>
+                    <span class="link-card-desc">官方视频创作比赛</span>
+                    <span class="link-card-tag">视频创作</span>
+                </a>
+                <a href="https://www.civitai.com/contests" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">Civitai</div>
+                    </div>
+                    <span class="link-card-title">Civitai大赛</span>
+                    <span class="link-card-desc">AI模型创作竞赛</span>
+                    <span class="link-card-tag">模型竞赛</span>
+                </a>
+                <a href="https://kaggle.com/competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">Kaggle</div>
+                    </div>
+                    <span class="link-card-title">Kaggle AI</span>
+                    <span class="link-card-desc">全球算法竞赛平台</span>
+                    <span class="link-card-tag">算法竞赛</span>
+                </a>
+                <a href="https://huggingface.co/spaces/competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">HF</div>
+                    </div>
+                    <span class="link-card-title">Hugging Face</span>
+                    <span class="link-card-desc">开源AI模型竞赛</span>
+                    <span class="link-card-tag">开源竞赛</span>
+                </a>
+                <a href="https://www.artbreeder.com/competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">ArtB</div>
+                    </div>
+                    <span class="link-card-title">ArtBreeder</span>
+                    <span class="link-card-desc">AI艺术创作比赛</span>
+                    <span class="link-card-tag">艺术创作</span>
+                </a>
+
+                <!-- 更多国际AIGC赛事 -->
+                <a href="https://ai.google.com/competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">Google</div>
+                    </div>
+                    <span class="link-card-title">Google AI</span>
+                    <span class="link-card-desc">AI创作挑战赛</span>
+                    <span class="link-card-tag">技术竞赛</span>
+                </a>
+                <a href="https://openai.com/research/competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">OpenAI</div>
+                    </div>
+                    <span class="link-card-title">OpenAI</span>
+                    <span class="link-card-desc">官方AI竞赛</span>
+                    <span class="link-card-tag">官方竞赛</span>
+                </a>
+                <a href="https://www.microsoft.com/ai/competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">MS</div>
+                    </div>
+                    <span class="link-card-title">Microsoft</span>
+                    <span class="link-card-desc">微软AI杯赛</span>
+                    <span class="link-card-tag">企业竞赛</span>
+                </a>
+                <a href="https://developer.nvidia.com/ai-competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">NVIDIA</div>
+                    </div>
+                    <span class="link-card-title">NVIDIA AI</span>
+                    <span class="link-card-desc">英伟达AI大赛</span>
+                    <span class="link-card-tag">技术竞赛</span>
+                </a>
+                <a href="https://www.adobe.com/creativecloud/ai-competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">Adobe</div>
+                    </div>
+                    <span class="link-card-title">Adobe AI</span>
+                    <span class="link-card-desc">AI创意设计竞赛</span>
+                    <span class="link-card-tag">创意设计</span>
+                </a>
+                <a href="https://www.autodesk.com/ai-competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">Autodesk</div>
+                    </div>
+                    <span class="link-card-title">Autodesk</span>
+                    <span class="link-card-desc">AI设计竞赛</span>
+                    <span class="link-card-tag">设计竞赛</span>
+                </a>
+                <a href="https://www.ea.com/ai-competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">EA</div>
+                    </div>
+                    <span class="link-card-title">EA AI</span>
+                    <span class="link-card-desc">游戏AI创作赛</span>
+                    <span class="link-card-tag">游戏AI</span>
+                </a>
+                <a href="https://www.unity.com/ai-competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">Unity</div>
+                    </div>
+                    <span class="link-card-title">Unity AI</span>
+                    <span class="link-card-desc">游戏开发竞赛</span>
+                    <span class="link-card-tag">游戏开发</span>
+                </a>
+                <a href="https://www.epicgames.com/ai-competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">Epic</div>
+                    </div>
+                    <span class="link-card-title">Epic AI</span>
+                    <span class="link-card-desc">游戏创作竞赛</span>
+                    <span class="link-card-tag">游戏创作</span>
+                </a>
+                <a href="https://www.metaculus.com/ai-competitions" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">Meta</div>
+                    </div>
+                    <span class="link-card-title">Meta AI</span>
+                    <span class="link-card-desc">AI创作挑战赛</span>
+                    <span class="link-card-tag">科技竞赛</span>
+                </a>
+
+                <!-- 社媒平台 -->
+                <a href="https://www.xiaohongshu.com/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">小红书</div>
+                    </div>
+                    <span class="link-card-title">小红书</span>
+                    <span class="link-card-desc">生活方式分享平台</span>
+                    <span class="link-card-tag">种草社区</span>
+                </a>
+                <a href="https://weixin.qq.com/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">视频号</div>
+                    </div>
+                    <span class="link-card-title">视频号</span>
+                    <span class="link-card-desc">微信短视频平台</span>
+                    <span class="link-card-tag">短视频</span>
+                </a>
+                <a href="https://mp.weixin.qq.com/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">公众号</div>
+                    </div>
+                    <span class="link-card-title">公众号</span>
+                    <span class="link-card-desc">微信公众平台</span>
+                    <span class="link-card-tag">内容创作</span>
+                </a>
+                <a href="https://www.bilibili.com/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">B站</div>
+                    </div>
+                    <span class="link-card-title">B站</span>
+                    <span class="link-card-desc">视频弹幕网站</span>
+                    <span class="link-card-tag">视频平台</span>
+                </a>
+                <a href="https://www.douyin.com/" target="_blank" class="link-card">
+                    <div class="link-card-header">
+                        <div class="link-card-logo">抖音</div>
+                    </div>
+                    <span class="link-card-title">抖音</span>
+                    <span class="link-card-desc">短视频社交平台</span>
+                    <span class="link-card-tag">短视频</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-logo">
+            <img src="https://s.coze.cn/image/SSpotMGsPyM/" alt="优选AIGC达人传媒">
+        </div>
+        <p class="footer-text">© 2026 优选AIGC达人传媒. AI重构连接，进化定义未来.</p>
+    </footer>
+
+    <!-- 联系弹窗 -->
+    <div class="contact-modal" id="contactModal">
+        <div class="contact-modal-content">
+            <button class="contact-modal-close" onclick="closeContactModal()"></button>
+
+            <!-- 几何装饰 -->
+            <div class="contact-modal-geo modal-geo-circle"></div>
+            <div class="contact-modal-geo modal-geo-square"></div>
+            <div class="contact-modal-geo modal-geo-triangle"></div>
+
+            <h2 class="contact-modal-title">优选AIGC达人传播</h2>
+
+            <div class="contact-info">
+                <div class="contact-item">
+                    <div class="contact-icon">👤</div>
+                    <div class="contact-details">
+                        <div class="contact-label">主理人</div>
+                        <div class="contact-value">安迪</div>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon">📧</div>
+                    <div class="contact-details">
+                        <div class="contact-label">邮箱</div>
+                        <div class="contact-value email">human@talentbest.cn</div>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon">💬</div>
+                    <div class="contact-details">
+                        <div class="contact-label">微信</div>
+                        <div class="contact-value">18802000030</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 滚动触发动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeSections = document.querySelectorAll('.fade-in-section');
+
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, observerOptions);
+
+            fadeSections.forEach(section => {
+                observer.observe(section);
+            });
+
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // 导航栏滚动效果
+            let lastScroll = 0;
+            const navbar = document.querySelector('.navbar');
+
+            window.addEventListener('scroll', function() {
+                const currentScroll = window.pageYOffset;
+
+                if (currentScroll > 100) {
+                    navbar.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
+                } else {
+                    navbar.style.backgroundColor = '#000000';
+                }
+
+                lastScroll = currentScroll;
+            });
+        });
+
+        // 联系弹窗功能
+        function openContactModal(event, type) {
+            event.preventDefault();
+            const modal = document.getElementById('contactModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeContactModal() {
+            const modal = document.getElementById('contactModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // 点击弹窗外部关闭
+        document.getElementById('contactModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeContactModal();
+            }
+        });
+
+        // ESC键关闭弹窗
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeContactModal();
+            }
+        });
+    </script>
+</body>
+</html>
